@@ -1,0 +1,35 @@
+{
+    "version": 1,
+    "name": "CustomInputs",
+    "maps": [
+        {
+            "name": "Main",
+            "id": "74df5bac-e04d-4863-8b7b-67e206c98106",
+            "actions": [
+                {
+                    "name": "MoveClick",
+                    "type": "Button",
+                    "id": "ec4b6b5b-c234-4f6d-bf66-d87fc9db3112",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "8ace3ab6-fcdb-444e-9a1a-bdbb03097f44",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MoveClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
