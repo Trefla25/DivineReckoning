@@ -78,9 +78,9 @@ public class Character : MonoBehaviour
 
    void FaceTarget()
    {
-      Vector3 direction = (agent.destination - transform.position).normalized;
+      Vector3 direction = agent.desiredVelocity;
       Vector3 flatDirection = new(direction.x, 0, direction.z);
-      if (flatDirection == Vector3.zero) return;
+      if (flatDirection.sqrMagnitude < 0.001f) return;
 
       Quaternion lookRotation = Quaternion.LookRotation(flatDirection);
       transform.rotation = Quaternion.Slerp(transform.rotation,
