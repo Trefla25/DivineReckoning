@@ -39,8 +39,29 @@
 # Jetbrains Rider personal-layer settings
 *.DotSettings.user
 
-# Visual Studio cache directory
+# Visual Studio cache/options directories and generated files
 .vs/
+*.vsconfig
+*.VC.opendb
+*.sln.docstates
+*.userosscache
+*.dbmdl
+*.jfm
+ipch/
+[Pp]ackages/build/
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
 
 # Gradle cache directory
 .gradle/
@@ -51,6 +72,7 @@ ExportedObj/
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
 *.tmp
 *.user
@@ -62,6 +84,12 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+
+# OS generated files
+.DS_Store
+.DS_Store?
+Thumbs.db
+Desktop.ini
 
 # Unity3D generated meta files
 *.pidb.meta
