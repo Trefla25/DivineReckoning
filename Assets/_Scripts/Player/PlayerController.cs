@@ -1,192 +1,123 @@
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.InputSystem;
 
-public class Character : MonoBehaviour
+[RequireComponent(typeof(PlayerMovementUtils), typeof(PlayerTargetingUtils), typeof(PlayerCombatUtils))]
+[RequireComponent(typeof(PlayerInputUtils), typeof(PlayerAnimatorUtils))]
+public class PlayerController : MonoBehaviour
 {
-   const string IDLE = "Idle";
-   const string WALK = "Walk";
-   const string ATTACK = "Attack";
-   const string PICKUP = "Pickup";
+    [SerializeField] float holdRepathInterval = 0.1f;
 
-   CustomInputs input;
+    PlayerInputUtils playerInput;
+    PlayerMovementUtils playerMovement;
+    PlayerTargetingUtils playerTargeting;
+    PlayerCombatUtils playerCombat;
+    PlayerAnimatorUtils playerAnimator;
 
-   NavMeshAgent agent;
-   Animator animator;
+    InteractableUtils currentTarget;
+    bool playerBusy;
+    float nextRepathTime;
 
-   [Header("Movement")]
-   [SerializeField] ParticleSystem clickEffect;
-   [SerializeField] LayerMask clickableLayers;
-   [SerializeField] float holdRepathInterval = 0.1f;
+    void Awake()
+    {
+        playerInput = GetComponent<PlayerInputUtils>();
+        playerMovement = GetComponent<PlayerMovementUtils>();
+        playerTargeting = GetComponent<PlayerTargetingUtils>();
+        playerCombat = GetComponent<PlayerCombatUtils>();
+        playerAnimator = GetComponent<PlayerAnimatorUtils>();
+    }
 
-   [Header("BasicAttack")]
-   [SerializeField] float attackSpeed = 1.5f;
-   [SerializeField] float attackDelay = 0.3f;
-   [SerializeField] float attackRange = 1.5f;
-   [SerializeField] int attackDamage = 1;
-   [SerializeField] ParticleSystem attackEffect;
-   bool playerBusy = false;
-   Interactable currentTarget;
-   
+    void OnEnable() => playerInput.MoveClick += ClickToMove;
+    void OnDisable() => playerInput.MoveClick -= ClickToMove;
 
-   float lookRotationSpeed = 8f;
-   float nextRepathTime;
-   
-   void Awake() 
-   {
-      agent = GetComponent<NavMeshAgent>();
-      animator = GetComponent<Animator>();
+    void Update()
+    {
+        FollowTarget();
+        HoldToMove();
+        playerMovement.FaceMoveDirection();
+        SetAnimations();
+    }
 
-      input = new CustomInputs();
-      AssignInputs();
-   }
+    void ClickToMove(bool held)
+    {
+        nextRepathTime = Time.time + holdRepathInterval;
 
-   void AssignInputs()
-   {
-      input.Main.MoveClick.performed += ctx => ClickToMove(false);
-   }
+        if (!playerTargeting.RaycastClick(out RaycastHit hit)) return;
 
-   void ClickToMove(bool pressed)
-   {
-      nextRepathTime = Time.time + holdRepathInterval;
-
-      Vector2 mousePosition = Mouse.current.position.ReadValue();
-      if (Physics.Raycast(Camera.main.ScreenPointToRay(mousePosition),
-      out RaycastHit hit, 100, clickableLayers))
-      {
-         if (hit.transform.CompareTag("Interactable"))
-         {
-            currentTarget = hit.transform.GetComponent<Interactable>();
-            if(clickEffect != null && !pressed)
-            {
-               Instantiate(clickEffect, hit.point + new Vector3(0, 0.1f, 0),
-                           clickEffect.transform.rotation); 
-            }
-         }
-         else
-         {
+        if (hit.transform.CompareTag("Interactable"))
+        {
+            currentTarget = hit.transform.GetComponent<InteractableUtils>();
+            if (!held) playerTargeting.SpawnClickEffect(hit.point);
+        }
+        else
+        {
             currentTarget = null;
+            playerMovement.MoveTo(hit.point);
+            if (!held) playerTargeting.SpawnClickEffect(hit.point);
+        }
+    }
 
-            agent.destination = hit.point;
-            if(clickEffect != null && !pressed)
-            { 
-               Instantiate(clickEffect, hit.point + new Vector3(0, 0.1f, 0),
-                           clickEffect.transform.rotation); 
-            }            
-         }
-      }
-   }
+    void HoldToMove()
+    {
+        if (playerInput.IsHeld && Time.time >= nextRepathTime)
+            ClickToMove(true);
+    }
 
-   void HoldToMove()
-   {
-      if (input.Main.MoveClick.IsPressed() && Time.time >= nextRepathTime)
-      { 
-         ClickToMove(true);
-      }
-   }
+    void FollowTarget()
+    {
+        if (currentTarget == null) return;
 
-   void OnEnable() 
-   { 
-      input.Enable(); 
-   }
+        if (Vector3.Distance(currentTarget.transform.position, transform.position) <= playerCombat.AttackRange)
+            ReachDistance();
+        else
+            playerMovement.MoveTo(currentTarget.transform.position);
+    }
 
-   void OnDisable() 
-   { 
-      input.Disable();
-   }
+    void ReachDistance()
+    {
+        playerMovement.Stop();
 
-   void Update()
-   {
-      FollowTarget();
-      HoldToMove();
-      FaceTarget();
-      SetAnimations();
-   }
+        if (playerBusy) return;
+        playerBusy = true;
 
-   void FollowTarget()
-   {
-      if(currentTarget == null) return;
+        switch (currentTarget.interactableType)
+        {
+            case InteractableType.Enemy:
+                playerAnimator.PlayAttack();
+                Invoke(nameof(SendAttack), playerCombat.AttackDelay);
+                Invoke(nameof(ResetBusyState), playerCombat.AttackSpeed);
+                break;
+            case InteractableType.Item:
+                playerAnimator.PlayPickup();
+                currentTarget.InteractWithItem();
+                currentTarget = null;
+                Invoke(nameof(ResetBusyState), 0.5f);
+                break;
+        }
+    }
 
-      if(Vector3.Distance(currentTarget.transform.position, transform.position) <= attackRange)
-      {
-         ReachDistance();
-      }
-      else
-      {
-         agent.SetDestination(currentTarget.transform.position);
-      }
-   }
+    void SendAttack()
+    {
+        if (currentTarget == null) return;
 
-   void FaceTarget()
-   {
-      Vector3 direction = agent.desiredVelocity;
-      Vector3 flatDirection = new(direction.x, 0, direction.z);
-      if (flatDirection.sqrMagnitude < 0.001f) return;
-
-      Quaternion lookRotation = Quaternion.LookRotation(flatDirection);
-      transform.rotation = Quaternion.Slerp(transform.rotation,
-                                             lookRotation,
-                                             Time.deltaTime * lookRotationSpeed);
-   }
-
-   void ReachDistance()
-   {
-      agent.SetDestination(transform.position);
-
-      if(playerBusy) return;
-
-      playerBusy = true;
-
-      switch (currentTarget.interactableType)
-      {
-         case InteractableType.Enemy:
-            animator.Play(ATTACK);
-
-            Invoke(nameof(SendAttack), attackDelay);
-            Invoke(nameof(ResetBusyState), attackSpeed);
-            break;
-         case InteractableType.Item:
-            animator.Play(PICKUP);
-
-            currentTarget.InteractWithItem();
+        if (currentTarget.damageActor.currentHealth <= 0)
+        {
             currentTarget = null;
+            return;
+        }
 
-            Invoke(nameof(ResetBusyState), 0.5f);
-            break;
-      }
-   }
+        playerCombat.DealDamage(currentTarget);
+    }
 
-   void SendAttack()
-   {
-      if(currentTarget == null) return;
+    void ResetBusyState()
+    {
+        playerBusy = false;
+        SetAnimations();
+    }
 
-      if(currentTarget.damageActor.currentHealth <= 0)
-      {
-         currentTarget = null;
-         return;
-      }
+    void SetAnimations()
+    {
+        if (playerBusy) return;
 
-      Instantiate(attackEffect, currentTarget.transform.position + new Vector3(0, 1f, 0), Quaternion.identity);
-      currentTarget.GetComponent<DealDamageActor>().TakeDamage(attackDamage);
-   }
-
-   void ResetBusyState()
-   {
-      playerBusy = false;
-      SetAnimations();
-   }
-
-   void SetAnimations()
-   {
-      if(playerBusy) return;
-
-      if(agent.velocity == Vector3.zero)
-      { 
-         animator.Play(IDLE); 
-      }
-      else
-      {
-          animator.Play(WALK);
-      }
-   }
+        if (playerMovement.IsStopped) playerAnimator.PlayIdle();
+        else playerAnimator.PlayWalk();
+    }
 }

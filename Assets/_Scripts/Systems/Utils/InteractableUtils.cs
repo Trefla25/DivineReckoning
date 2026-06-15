@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Interactable : MonoBehaviour
+public class InteractableUtils : MonoBehaviour
 {
     public DealDamageActor damageActor { get; private set; }
     public InteractableType interactableType;
