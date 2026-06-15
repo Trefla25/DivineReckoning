@@ -2790,6 +2790,21 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       insertIndex: -1
       addedObject: {fileID: 883511269}
+    - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 883511273}
+    - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 883511272}
+    - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 883511271}
+    - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 883511275}
+    - targetCorrespondingSourceObject: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 883511274}
   m_SourcePrefab: {fileID: 100100000, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
 --- !u!4 &233308070 stripped
 Transform:
@@ -7609,16 +7624,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 399522b28e3265549ac3f695ad271d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Character
-  clickEffect: {fileID: 3895860527489104918, guid: 3fba5055f15377248940a8264c033617, type: 3}
-  clickableLayers:
-    serializedVersion: 2
-    m_Bits: 192
-  holdRepathInterval: 0.1
-  attackSpeed: 1.5
-  attackDelay: 0.1
-  attackRange: 1.5
-  attackDamage: 1
-  attackEffect: {fileID: 747497710485455894, guid: 39bb672923255934581cd86b04d3b85b, type: 3}
 --- !u!114 &883511266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7648,6 +7653,74 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DealDamageActor
   maxHealth: 5
   currentHealth: 5
+--- !u!114 &883511271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883511251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2527557198ee6da48b6e40de546b4e99, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatUtils
+  attackRange: 1.5
+  attackDamage: 1
+  attackEffect: {fileID: 747497710485455894, guid: 39bb672923255934581cd86b04d3b85b, type: 3}
+--- !u!114 &883511272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883511251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bbcc495239c01d49b7d141936113440, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerTargetingUtils
+  clickableLayers:
+    serializedVersion: 2
+    m_Bits: 192
+  clickEffect: {fileID: 3895860527489104918, guid: 3fba5055f15377248940a8264c033617, type: 3}
+--- !u!114 &883511273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883511251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c17dedd2f442e943b745168709d5f73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementUtils
+  lookRotationSpeed: 8
+--- !u!114 &883511274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883511251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cac071a393c49e4894255e06236472f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimatorUtils
+--- !u!114 &883511275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 883511251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4cef9cc9df59aa41bec3b767eea8009, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInputUtils
 --- !u!64 &889815007
 MeshCollider:
   m_ObjectHideFlags: 0
