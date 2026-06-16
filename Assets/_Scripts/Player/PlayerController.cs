@@ -58,7 +58,9 @@ public class PlayerController : MonoBehaviour
     void HoldToMove()
     {
         if (playerInput.IsHeld && Time.time >= nextRepathTime)
+        {
             ClickToMove(true);
+        }
     }
 
     void FollowTarget()
@@ -66,9 +68,14 @@ public class PlayerController : MonoBehaviour
         if (currentTarget == null) return;
 
         if (Vector3.Distance(currentTarget.transform.position, transform.position) <= playerCombat.AttackRange)
+        {
             ReachDistance();
+        }
         else
+        {
             playerMovement.MoveTo(currentTarget.transform.position);
+        }
+
     }
 
     void ReachDistance()

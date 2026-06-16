@@ -2650,7 +2650,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4416926081852918481, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: m_Name
-      value: PlayerArmature
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 4416926081852918490, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: GroundLayers.m_Bits
@@ -3785,7 +3785,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911765, y: 0.3696438, z: -0.09904577, w: 0.89239913}
-  m_LocalPosition: {x: -12.247448, y: 10.000002, z: -12.247448}
+  m_LocalPosition: {x: -12.384941, y: 9.663213, z: -12.384941}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5494,7 +5494,7 @@ Transform:
   m_GameObject: {fileID: 614000418}
   serializedVersion: 2
   m_LocalRotation: {x: 0.23911765, y: 0.3696438, z: -0.09904577, w: 0.89239913}
-  m_LocalPosition: {x: -12.247448, y: 10.000002, z: -12.247448}
+  m_LocalPosition: {x: -12.384941, y: 9.663213, z: -12.384941}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5558,7 +5558,7 @@ MonoBehaviour:
   CameraDistance: 20
   DeadZoneDepth: 0
   Composition:
-    ScreenPosition: {x: 0, y: 0}
+    ScreenPosition: {x: 0, y: -0.019444495}
     DeadZone:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
@@ -7624,6 +7624,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 399522b28e3265549ac3f695ad271d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Character
+  holdRepathInterval: 0.1
 --- !u!114 &883511266
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7665,6 +7666,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2527557198ee6da48b6e40de546b4e99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatUtils
+  attackSpeed: 1.5
+  attackDelay: 0.3
   attackRange: 1.5
   attackDamage: 1
   attackEffect: {fileID: 747497710485455894, guid: 39bb672923255934581cd86b04d3b85b, type: 3}
@@ -7680,10 +7683,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bbcc495239c01d49b7d141936113440, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerTargetingUtils
+  clickEffect: {fileID: 3895860527489104918, guid: 3fba5055f15377248940a8264c033617, type: 3}
   clickableLayers:
     serializedVersion: 2
     m_Bits: 192
-  clickEffect: {fileID: 3895860527489104918, guid: 3fba5055f15377248940a8264c033617, type: 3}
 --- !u!114 &883511273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7696,7 +7699,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c17dedd2f442e943b745168709d5f73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementUtils
-  lookRotationSpeed: 8
 --- !u!114 &883511274
 MonoBehaviour:
   m_ObjectHideFlags: 0
