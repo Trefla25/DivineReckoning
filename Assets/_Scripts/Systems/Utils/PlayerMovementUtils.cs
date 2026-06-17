@@ -1,13 +1,20 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(NavMeshAgent), typeof(StatController))]
 public class PlayerMovementUtils : MonoBehaviour
 {
     float lookRotationSpeed = 8f;
     NavMeshAgent agent;
+    StatController stats;
 
-    void Awake() => agent = GetComponent<NavMeshAgent>();
+    void Awake()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        stats = GetComponent<StatController>();
+    }
+
+    void Update() => agent.speed = stats.GetValue(StatType.MoveSpeed); // reflects slows/hastes live
 
     public bool IsStopped => agent.velocity == Vector3.zero;
 
