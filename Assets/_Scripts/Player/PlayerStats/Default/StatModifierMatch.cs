@@ -1,0 +1,37 @@
+using System;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+
+public readonly struct StatModifierMatch : IEquatable<StatModifier<StatModifierData>>
+{
+    public readonly ValueContainer<float> ModifierValue;
+    public readonly ValueContainer<StatModifierType> Type;
+    public readonly ValueContainer<object> Source;
+
+    public StatModifierMatch(ValueContainer<float> modifierValue = default, ValueContainer<StatModifierType> type = default, ValueContainer<object> source = default)
+    {
+        ModifierValue = modifierValue;
+        Type = type;
+        Source = source;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool Equals(StatModifier<StatModifierData> modifier)
+    {
+        return (!ModifierValue.HasValue || ModifierValue.Value == modifier.Value) && (!Type.HasValue || Type.Value == modifier.Data.Type) && (!Source.HasValue || Source.Value == modifier.Data.Source);
+    }
+}
+
+public readonly struct ValueContainer<T>
+{
+    public readonly T Value;
+    public readonly bool HasValue;
+
+    public ValueContainer(T value)
+    {
+        Value = value;
+        HasValue = true;
+    }
+
+    public static implicit operator ValueContainer<T>(T value) => new(value);
+}

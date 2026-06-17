@@ -1,0 +1,108 @@
+using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+
+public abstract class Stat<T> : IStat<T> where T : struct, IStatModifierData<T>
+{
+    protected readonly IStat<T>[] stats;
+
+    private bool isDirty;
+    private float baseValue;
+    private float currentValue;
+
+    public event Action? OnValueChanged;
+
+    public float BaseValue { get => baseValue; set => SetBaseValue(value); }
+    public float FinalValue => GetFinalValue();
+    public int ModifiersCount => GetModifiersCount();
+
+    public IReadOnlyList<IStat<T>> Stats => stats;
+
+    IReadOnlyList<IStat> IStat.Stats => stats;
+    IReadOnlyList<IReadOnlyStat<T>> IReadOnlyStat<T>.Stats => stats;
+    IReadOnlyList<IReadOnlyStat> IReadOnlyStat.Stats => stats;
+
+    protected Stat(float baseValue = 0, params IStat<T>[] stats)
+    {
+        this.stats = stats;
+        this.baseValue = baseValue;
+        currentValue = CalculateFinalValue(baseValue);
+
+        Action onChangedDelegate = OnChanged;
+
+        for (int i = 0; i < stats.Length; i++)
+        {
+            stats[i].OnValueChanged += onChangedDelegate;
+        }
+    }
+
+    public abstract void AddModifier(StatModifier<T> modifier);
+    public abstract bool RemoveModifier(StatModifier<T> modifier);
+    protected abstract float CalculateFinalValue(float baseValue);
+
+    public int RemoveAllModifiers<TMatch>(TMatch match) where TMatch : IEquatable<StatModifier<T>>
+    {
+        int removedCount = 0;
+        for (int i = 0; i < stats.Length; i++)
+        {
+            removedCount += stats[i].RemoveAllModifiers(match);
+        }
+        return removedCount;
+    }
+
+    public void Clear()
+    {
+        for (int i = 0; i < stats.Length; i++)
+        {
+            stats[i].Clear();
+        }
+    }
+
+    public void GetModifiers(IList<StatModifier<T>> results)
+    {
+        for (int i = 0; i < stats.Length; i++)
+        {
+            stats[i].GetModifiers(results);
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void SetBaseValue(float value)
+    {
+        if (baseValue != value)
+        {
+            isDirty = true;
+            baseValue = value;
+            OnValueChanged?.Invoke();
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private float GetFinalValue()
+    {
+        if (isDirty)
+        {
+            isDirty = false;
+            currentValue = CalculateFinalValue(baseValue);
+        }
+        return currentValue;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private int GetModifiersCount()
+    {
+        int count = 0;
+        for (int i = 0; i < stats.Length; i++)
+        {
+            count += stats[i].ModifiersCount;
+        }
+        return count;
+    }
+
+    private void OnChanged()
+    {
+        isDirty = true;
+        OnValueChanged?.Invoke();
+    }
+}
