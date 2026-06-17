@@ -2,19 +2,14 @@ using UnityEngine;
 
 public class InteractableUtils : MonoBehaviour
 {
-    public DealDamageActor damageActor { get; private set; }
+    public StatController stats { get; private set; }
     public InteractableType interactableType;
 
     void Awake()
     {
-        if(interactableType == InteractableType.Enemy)
-        {
-            damageActor = GetComponent<DealDamageActor>();
-        }
+        if (interactableType == InteractableType.Enemy)
+            stats = GetComponent<StatController>();
     }
 
-    public void InteractWithItem()
-    {
-        Destroy(gameObject);
-    }
+    public void InteractWithItem() => Destroy(gameObject);
 }

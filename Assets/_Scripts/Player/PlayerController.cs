@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviour
     {
         if (currentTarget == null) return;
 
-        if (currentTarget.damageActor.currentHealth <= 0)
+        if (currentTarget.stats == null || currentTarget.stats.IsDead)
         {
             currentTarget = null;
             return;
