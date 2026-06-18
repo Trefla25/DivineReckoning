@@ -6,15 +6,19 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] float holdRepathInterval = 0.1f;
 
+    public StatController SelectedTarget { get; private set; }
+
     PlayerInputUtils playerInput;
     PlayerMovementUtils playerMovement;
     PlayerTargetingUtils playerTargeting;
     PlayerCombatUtils playerCombat;
     PlayerAnimatorUtils playerAnimator;
-
     InteractableUtils currentTarget;
+
     bool playerBusy;
     float nextRepathTime;
+
+    public bool IsBusy => playerBusy;
 
     void Awake()
     {
@@ -25,8 +29,16 @@ public class PlayerController : MonoBehaviour
         playerAnimator = GetComponent<PlayerAnimatorUtils>();
     }
 
-    void OnEnable() => playerInput.MoveClick += ClickToMove;
-    void OnDisable() => playerInput.MoveClick -= ClickToMove;
+    void OnEnable()
+    {
+        playerInput.MoveClick += OnMoveClick;
+        playerInput.SelectClick += OnSelectClick;
+    }
+    void OnDisable()
+    {
+        playerInput.MoveClick -= OnMoveClick;
+        playerInput.SelectClick -= OnSelectClick;
+    }
 
     void Update()
     {
@@ -36,22 +48,46 @@ public class PlayerController : MonoBehaviour
         SetAnimations();
     }
 
-    void ClickToMove(bool held)
+    public void SetBusy(bool value)
+    {
+        playerBusy = value;
+        if (!value) 
+        {
+            SetAnimations();
+        }
+    }
+
+    void OnMoveClick(bool held)
     {
         nextRepathTime = Time.time + holdRepathInterval;
 
         if (!playerTargeting.RaycastClick(out RaycastHit hit)) return;
 
-        if (hit.transform.CompareTag("Interactable"))
+        if (hit.transform.TryGetComponent(out InteractableUtils interactable))
         {
-            currentTarget = hit.transform.GetComponent<InteractableUtils>();
-            if (!held) playerTargeting.SpawnClickEffect(hit.point);
+            currentTarget = interactable;
+            if (interactable.interactableType == InteractableType.Enemy)
+                SelectTarget(interactable.stats);
+            if (!held)
+                playerTargeting.SpawnClickEffect(hit.point);
         }
         else
         {
             currentTarget = null;
             playerMovement.MoveTo(hit.point);
-            if (!held) playerTargeting.SpawnClickEffect(hit.point);
+            if (!held)
+                playerTargeting.SpawnClickEffect(hit.point);
+        }
+    }
+
+    void OnSelectClick()
+    {
+        if (!playerTargeting.RaycastClick(out RaycastHit hit)) return;
+
+        if (hit.transform.TryGetComponent(out InteractableUtils interactable)
+            && interactable.interactableType == InteractableType.Enemy)
+        {
+            SelectTarget(interactable.stats);
         }
     }
 
@@ -59,7 +95,7 @@ public class PlayerController : MonoBehaviour
     {
         if (playerInput.IsHeld && Time.time >= nextRepathTime)
         {
-            ClickToMove(true);
+            OnMoveClick(true);
         }
     }
 
@@ -82,6 +118,9 @@ public class PlayerController : MonoBehaviour
     {
         playerMovement.Stop();
 
+        if (currentTarget.interactableType == InteractableType.Enemy)
+            playerMovement.FaceTowards(currentTarget.transform.position);
+
         if (playerBusy) return;
         playerBusy = true;
 
@@ -100,6 +139,25 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
+
+    void SelectTarget(StatController target)
+    {
+        if (SelectedTarget != null)
+        {
+            SelectedTarget.OnDied -= OnSelectedDied;
+        }
+
+        SelectedTarget = target;
+
+        if (SelectedTarget != null)
+        {
+            SelectedTarget.OnDied += OnSelectedDied;
+        }
+
+        Debug.Log("Target selected: " + target.name);
+    }
+
+    void OnSelectedDied(StatController s) => SelectedTarget = null;
 
     void SendAttack()
     {
@@ -124,7 +182,13 @@ public class PlayerController : MonoBehaviour
     {
         if (playerBusy) return;
 
-        if (playerMovement.IsStopped) playerAnimator.PlayIdle();
-        else playerAnimator.PlayWalk();
+        if (playerMovement.IsStopped)
+        {
+            playerAnimator.PlayIdle();
+        }
+        else
+        {
+            playerAnimator.PlayWalk();
+        }
     }
 }

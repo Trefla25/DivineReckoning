@@ -28,7 +28,14 @@ public class PlayerMovementUtils : MonoBehaviour
         if (flatDirection.sqrMagnitude < 0.001f) return;
 
         Quaternion lookRotation = Quaternion.LookRotation(flatDirection);
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation,
-                                              Time.deltaTime * lookRotationSpeed);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * lookRotationSpeed);
+    }
+
+    public void FaceTowards(Vector3 worldPoint)
+    {
+        Vector3 direction = worldPoint - transform.position;
+        direction.y = 0f;                                  // keep upright; ignore height
+        if (direction.sqrMagnitude < 0.001f) return;       // already on top of it
+        transform.rotation = Quaternion.LookRotation(direction);
     }
 }

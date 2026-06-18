@@ -14,4 +14,11 @@ public class PlayerAnimatorUtils : MonoBehaviour
     public void PlayWalk() => animator.Play(WALK);
     public void PlayAttack() => animator.Play(ATTACK);
     public void PlayPickup() => animator.Play(PICKUP);
+    public void PlayAbility(string state)
+    {
+        if (!string.IsNullOrEmpty(state))
+        {
+            animator.Play(state);
+        }
+    }
 }

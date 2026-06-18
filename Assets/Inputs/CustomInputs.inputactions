@@ -16,9 +16,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Ability1",
+                    "name": "SelectClick",
                     "type": "Button",
-                    "id": "44e2945d-64b1-45b6-8c17-687e6dd37a29",
+                    "id": "08e11445-e6e2-4392-9745-05f71c6e09fa",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -39,12 +39,12 @@
                 },
                 {
                     "name": "",
-                    "id": "a4fc3408-ed92-4516-b5fd-ff5ad9a92c31",
-                    "path": "<Keyboard>/#(1)",
+                    "id": "d24b4ffa-3fe2-49ed-9a14-b2373d95d726",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Ability1",
+                    "action": "SelectClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
