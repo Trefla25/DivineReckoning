@@ -20,6 +20,7 @@ public readonly struct StatModifier<T> : IComparable<StatModifier<T>>, IEquatabl
     public int CompareTo(StatModifier<T> other)
     {
         int result = Value.CompareTo(other.Value);
+
         if (result == 0)
         {
             result = Data.CompareTo(other.Data);

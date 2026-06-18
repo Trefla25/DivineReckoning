@@ -102,9 +102,9 @@ public partial class @CustomInputs: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Ability1"",
+                    ""name"": ""SelectClick"",
                     ""type"": ""Button"",
-                    ""id"": ""44e2945d-64b1-45b6-8c17-687e6dd37a29"",
+                    ""id"": ""08e11445-e6e2-4392-9745-05f71c6e09fa"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -125,12 +125,12 @@ public partial class @CustomInputs: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a4fc3408-ed92-4516-b5fd-ff5ad9a92c31"",
-                    ""path"": ""<Keyboard>/#(1)"",
+                    ""id"": ""d24b4ffa-3fe2-49ed-9a14-b2373d95d726"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Ability1"",
+                    ""action"": ""SelectClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -142,7 +142,7 @@ public partial class @CustomInputs: IInputActionCollection2, IDisposable
         // Main
         m_Main = asset.FindActionMap("Main", throwIfNotFound: true);
         m_Main_MoveClick = m_Main.FindAction("MoveClick", throwIfNotFound: true);
-        m_Main_Ability1 = m_Main.FindAction("Ability1", throwIfNotFound: true);
+        m_Main_SelectClick = m_Main.FindAction("SelectClick", throwIfNotFound: true);
     }
 
     ~@CustomInputs()
@@ -224,7 +224,7 @@ public partial class @CustomInputs: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Main;
     private List<IMainActions> m_MainActionsCallbackInterfaces = new List<IMainActions>();
     private readonly InputAction m_Main_MoveClick;
-    private readonly InputAction m_Main_Ability1;
+    private readonly InputAction m_Main_SelectClick;
     /// <summary>
     /// Provides access to input actions defined in input action map "Main".
     /// </summary>
@@ -241,9 +241,9 @@ public partial class @CustomInputs: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @MoveClick => m_Wrapper.m_Main_MoveClick;
         /// <summary>
-        /// Provides access to the underlying input action "Main/Ability1".
+        /// Provides access to the underlying input action "Main/SelectClick".
         /// </summary>
-        public InputAction @Ability1 => m_Wrapper.m_Main_Ability1;
+        public InputAction @SelectClick => m_Wrapper.m_Main_SelectClick;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -273,9 +273,9 @@ public partial class @CustomInputs: IInputActionCollection2, IDisposable
             @MoveClick.started += instance.OnMoveClick;
             @MoveClick.performed += instance.OnMoveClick;
             @MoveClick.canceled += instance.OnMoveClick;
-            @Ability1.started += instance.OnAbility1;
-            @Ability1.performed += instance.OnAbility1;
-            @Ability1.canceled += instance.OnAbility1;
+            @SelectClick.started += instance.OnSelectClick;
+            @SelectClick.performed += instance.OnSelectClick;
+            @SelectClick.canceled += instance.OnSelectClick;
         }
 
         /// <summary>
@@ -290,9 +290,9 @@ public partial class @CustomInputs: IInputActionCollection2, IDisposable
             @MoveClick.started -= instance.OnMoveClick;
             @MoveClick.performed -= instance.OnMoveClick;
             @MoveClick.canceled -= instance.OnMoveClick;
-            @Ability1.started -= instance.OnAbility1;
-            @Ability1.performed -= instance.OnAbility1;
-            @Ability1.canceled -= instance.OnAbility1;
+            @SelectClick.started -= instance.OnSelectClick;
+            @SelectClick.performed -= instance.OnSelectClick;
+            @SelectClick.canceled -= instance.OnSelectClick;
         }
 
         /// <summary>
@@ -341,11 +341,11 @@ public partial class @CustomInputs: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMoveClick(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Ability1" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "SelectClick" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnAbility1(InputAction.CallbackContext context);
+        void OnSelectClick(InputAction.CallbackContext context);
     }
 }

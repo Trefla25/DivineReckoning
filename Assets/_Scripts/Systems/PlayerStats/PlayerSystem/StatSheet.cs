@@ -7,7 +7,7 @@ public class StatSheet
     private readonly Dictionary<StatType, Stat> stats = new();
 
     public StatResource Health { get; }
-    public StatResource Mana { get; }
+    public StatResource Resource { get; }
 
     public StatSheet(IEnumerable<KeyValuePair<StatType, float>> baseValues)
     {
@@ -18,7 +18,7 @@ public class StatSheet
             stats[kvp.Key].BaseValue = kvp.Value;
 
         Health = new StatResource(stats[StatType.MaxHealth]);
-        Mana = new StatResource(stats[StatType.MaxMana]);
+        Resource = new StatResource(stats[StatType.MaxResource]);
     }
 
     public Stat Get(StatType type) => stats[type];
