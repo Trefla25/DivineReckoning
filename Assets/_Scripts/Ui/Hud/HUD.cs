@@ -2,18 +2,27 @@ using UnityEngine;
 
 public class HUD : MonoBehaviour
 {
+    [SerializeField] StatController stats;
     [SerializeField] EnergyBar healthBar;
     [SerializeField] EnergyBar resourceBar;
 
-    [SerializeField] float maxHealth = 100f;
-    [SerializeField] float maxResource = 100f;
-
     private void Start()
     {
-        healthBar.SetMaxPoints(maxHealth);
-        healthBar.SetPoints(maxHealth);
+        var health = stats.Stats.Health;
+        var resource = stats.Stats.Resource;
 
-        resourceBar.SetMaxPoints(maxResource);
-        resourceBar.SetPoints(maxResource);
+        health.OnChanged += healthBar.SetValues;
+        resource.OnChanged += resourceBar.SetValues;
+
+        healthBar.SetValues(health.Current, health.Max);
+        resourceBar.SetValues(resource.Current, resource.Max);
+    }
+
+    private void OnDestroy()
+    {
+        if (stats == null || stats.Stats == null) return;
+
+        stats.Stats.Health.OnChanged -= healthBar.SetValues;
+        stats.Stats.Resource.OnChanged -= resourceBar.SetValues;
     }
 }

@@ -32,4 +32,5 @@ public class StatController : MonoBehaviour
     public bool HasResource(float amount) => Stats.Resource.Current >= amount;
     public void SpendResource(float amount) => Stats.Resource.Modify(-Mathf.Max(0, amount));
     public void GainResource(float amount) => Stats.Resource.Modify(Mathf.Max(0, amount));
+    public void IncreaseMaxHealth(float amount) => Stats.Get(StatType.MaxHealth).BaseValue += amount;
 }

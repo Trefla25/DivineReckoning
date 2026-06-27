@@ -1,10 +1,13 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.ParticleSystem;
 
 [RequireComponent(typeof(Slider))]
 public class EnergyBar : MonoBehaviour
 {
     [SerializeField] Slider slider;
+    [SerializeField] TMP_Text label;
 
     [Header("LazyBar")]
     [SerializeField] Slider lazySlider;
@@ -20,6 +23,36 @@ public class EnergyBar : MonoBehaviour
         }
     }
 
+    public void SetValues(float current, float max)
+    {
+        slider.maxValue = max;
+
+        if (label != null)
+        {
+            label.text = $"{Mathf.CeilToInt(current)}/{Mathf.RoundToInt(max)}";
+        }
+
+        if (lazySlider is null)
+        {
+            slider.value = current;
+            return;
+        }
+
+        lazySlider.maxValue = max;
+
+        if (current < slider.value)
+        {
+            lazyCatchupTime = Time.time + lazyDelay;
+        }
+        else
+        {
+            lazySlider.value = current;
+        }
+
+        slider.value = current;
+    }
+
+
     private void Update()
     {
         if (lazySlider is null) return;
@@ -28,43 +61,5 @@ public class EnergyBar : MonoBehaviour
         {
             lazySlider.value = Mathf.Lerp(lazySlider.value, slider.value, Time.deltaTime * 10f);
         }
-    }
-
-    public void SetMaxPoints(float maxPoints)
-    {
-        slider.maxValue = maxPoints;
-
-        if (lazySlider is null) return;
-
-        lazySlider.maxValue = maxPoints;
-    }
-
-    public void SetPoints(float points)
-    {
-        slider.value = points;
-
-        if (lazySlider is null) return;
-        
-        lazySlider.value = points;
-        
-    }
-
-    public void DamagePoints(float damage)
-    {
-        slider.value -= damage;
-
-        if (lazySlider is null) return;
-
-        lazyCatchupTime = Time.time + lazyDelay;
-    }
-
-    public void RestorePoints(float points)
-    {
-        slider.value += points;
-
-        if (lazySlider is null) return;
-        
-        lazySlider.value = slider.value;
-        
     }
 }
