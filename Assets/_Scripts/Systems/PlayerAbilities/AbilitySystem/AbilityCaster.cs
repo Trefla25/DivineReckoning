@@ -51,6 +51,7 @@ public class AbilityCaster : MonoBehaviour
     {
         casting = true;
         controller?.SetBusy(true);
+        if (ability.lockMovement) controller?.SetMovementLocked(true);
         cooldownEnds[slot] = Time.time + ability.cooldown;
 
         FaceCastDirection(ability);
@@ -64,6 +65,7 @@ public class AbilityCaster : MonoBehaviour
         // Keep the animation up so SetAnimations() doesn't override it the same frame (instant casts).
         if (ability.recoveryTime > 0f) yield return new WaitForSeconds(ability.recoveryTime);
 
+        controller?.SetMovementLocked(false);
         controller?.SetBusy(false);
         casting = false;
     }
