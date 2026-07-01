@@ -3,9 +3,11 @@ using UnityEngine;
 
 public class PlayerInputUtils : MonoBehaviour
 {
-    public event Action<bool> MoveClick;   // bool = wasHeld
-    public event Action SelectClick;
-    public bool IsHeld => input.Main.MoveClick.IsPressed();
+    public event Action<bool> MoveClick;        // RMB  (bool = wasHeld)
+    public event Action<bool> AttackMoveClick;  // LMB  (bool = wasHeld)
+
+    public bool IsMoveHeld => input.Main.MoveClick.IsPressed();
+    public bool IsAttackHeld => input.Main.SelectClick.IsPressed();
 
     CustomInputs input;
 
@@ -13,7 +15,7 @@ public class PlayerInputUtils : MonoBehaviour
     {
         input = new CustomInputs();
         input.Main.MoveClick.performed += _ => MoveClick?.Invoke(false);
-        input.Main.SelectClick.performed += _ => SelectClick?.Invoke();
+        input.Main.SelectClick.performed += _ => AttackMoveClick?.Invoke(false);
     }
 
     void OnEnable() => input.Enable();

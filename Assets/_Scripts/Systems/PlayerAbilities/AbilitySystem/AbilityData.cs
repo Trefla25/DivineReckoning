@@ -12,6 +12,9 @@ public class AbilityData : ScriptableObject
     [Tooltip("Animator state to Play() while casting (e.g. \"Attack\"). Blank = none.")]
     public string animationState;
     [Range(0f, 4f)] public float castTime = 0.5f;
+    [Tooltip("Root the player in place for the duration of the cast. " +
+             "Off = the player can keep moving while this ability fires.")]
+    public bool lockMovement = true;
     [Tooltip("Holds the cast animation after the effect fires so Idle/Walk doesn't stomp it. " +
                "Required for instant (castTime 0) abilities.")]
     [Range(0f, 2f)] public float recoveryTime = 0.4f;

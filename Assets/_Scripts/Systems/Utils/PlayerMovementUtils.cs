@@ -16,10 +16,27 @@ public class PlayerMovementUtils : MonoBehaviour
 
     void Update() => agent.speed = stats.GetValue(StatType.MoveSpeed); // reflects slows/hastes live
 
-    public bool IsStopped => agent.velocity == Vector3.zero;
+    // Small tolerance instead of exact zero: near corners/arrival the velocity can
+    // flicker around zero, which would otherwise flip-flop Idle<->Walk every frame.
+    public bool IsStopped => agent.velocity.sqrMagnitude < 0.01f;
 
-    public void MoveTo(Vector3 point) => agent.destination = point;
-    public void Stop() => agent.SetDestination(transform.position);
+    public bool HasArrived =>
+        !agent.pathPending &&
+        agent.remainingDistance <= agent.stoppingDistance &&
+        (!agent.hasPath || agent.velocity.sqrMagnitude < 0.01f);
+
+    // Assigning agent.destination triggers a path recompute, so skip redundant
+    // repaths (chase + hold-to-move call this ~every frame). 0.0625 = (0.25m)^2.
+    public void MoveTo(Vector3 point)
+    {
+        if ((point - agent.destination).sqrMagnitude < 0.0625f) return;
+        agent.destination = point;
+    }
+
+    public void Stop()
+    {
+        if (!IsStopped) agent.SetDestination(transform.position);
+    }
 
     public void FaceMoveDirection()
     {
@@ -37,5 +54,16 @@ public class PlayerMovementUtils : MonoBehaviour
         direction.y = 0f;                                  // keep upright; ignore height
         if (direction.sqrMagnitude < 0.001f) return;       // already on top of it
         transform.rotation = Quaternion.LookRotation(direction);
+    }
+
+    // Eased version used while auto-attacking so the player turns toward the enemy
+    // (including while strafing/kiting) instead of snapping.
+    public void FaceTowardsSmooth(Vector3 worldPoint)
+    {
+        Vector3 direction = worldPoint - transform.position;
+        direction.y = 0f;
+        if (direction.sqrMagnitude < 0.001f) return;
+        Quaternion lookRotation = Quaternion.LookRotation(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * lookRotationSpeed);
     }
 }
