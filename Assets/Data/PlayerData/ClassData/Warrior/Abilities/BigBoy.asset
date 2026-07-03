@@ -16,8 +16,9 @@ MonoBehaviour:
   icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   animationState: Attack
   castTime: 0
+  lockMovement: 1
   recoveryTime: 1
-  cooldown: 1
+  cooldown: 5
   resourceCost: 0
   abilityRange: 5
   targeting:
