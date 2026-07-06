@@ -6,35 +6,71 @@ public class PlayerAnimatorUtils : MonoBehaviour
     const string WALK = "Walk";
     const string ATTACK = "Attack";
     const string PICKUP = "Pickup";
+    const string UPPER_LAYER = "UpperBody";
+    const string ATTACK_SPEED_PARAM = "AttackSpeed";
+
+    [SerializeField] float upperBlendSpeed = 12f;
 
     Animator animator;
-    string currentState;
+    int upperLayer;
+    string baseState;
+    float upperTarget;
+    int upperStateHash;
+    bool upperStarted;
 
-    void Awake() => animator = GetComponent<Animator>();
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+        upperLayer = animator.GetLayerIndex(UPPER_LAYER);
+    }
 
-    public void PlayIdle() => Play(IDLE, fade: 0.12f);
-    public void PlayWalk() => Play(WALK, fade: 0.12f);
+    void Update()
+    {
+        float weight = animator.GetLayerWeight(upperLayer);
+        weight = Mathf.MoveTowards(weight, upperTarget, upperBlendSpeed * Time.deltaTime);
+        animator.SetLayerWeight(upperLayer, weight);
 
-    // Scales playback so the whole attack clip plays in time with attack speed
-    // (faster attacks => faster animation), instead of getting cut to a "bonk".
-    public void PlayAttack(float speedMultiplier) => Play(ATTACK, forceRestart: true, speed: speedMultiplier, fade: 0.02f);
-    public void PlayPickup() => Play(PICKUP, forceRestart: true, fade: 0.02f);
+        if (upperStateHash != 0 && !animator.IsInTransition(upperLayer))
+        {
+            AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(upperLayer);
+            if (info.shortNameHash == upperStateHash)
+            {
+                if (info.normalizedTime < 1f) upperStarted = true;
+                else if (upperStarted) { upperTarget = 0f; upperStateHash = 0; }
+            }
+        }
+    }
+
+    public void PlayIdle() => PlayBase(IDLE, fade: 0.12f);
+    public void PlayWalk() => PlayBase(WALK, fade: 0.12f);
+
+    void PlayBase(string state, float fade)
+    {
+        if (state == baseState) return;
+        baseState = state;
+        animator.CrossFadeInFixedTime(state, fade, 0);
+    }
+
+    public void PlayAttack(float speedMultiplier)
+    {
+        animator.SetFloat(ATTACK_SPEED_PARAM, speedMultiplier);
+        PlayUpper(ATTACK);
+    }
 
     public void PlayAbility(string state)
     {
-        if (!string.IsNullOrEmpty(state)) Play(state, forceRestart: true, fade: 0.02f);
+        if (string.IsNullOrEmpty(state)) return;
+        animator.SetFloat(ATTACK_SPEED_PARAM, 1f);
+        PlayUpper(state);
     }
 
-    void Play(string state, bool forceRestart = false, float speed = 1f, float fade = 0.1f)
+    public void PlayPickup() => PlayUpper(PICKUP);
+
+    void PlayUpper(string state)
     {
-        animator.speed = speed;   // keep speed in sync even when we early-out below
-
-        if (!forceRestart && state == currentState) return;
-
-        currentState = state;
-        // CrossFade (not Play) blends between states so Idle<->Walk doesn't hard-cut/pop.
-        // A transition also restarts the destination state from 0, so repeat attacks
-        // re-animate instead of parking on the finished clip's last frame.
-        animator.CrossFadeInFixedTime(state, fade);
+        upperTarget = 1f;
+        upperStateHash = Animator.StringToHash(state);
+        upperStarted = false;
+        animator.CrossFadeInFixedTime(state, 0.02f, upperLayer, 0f);
     }
 }

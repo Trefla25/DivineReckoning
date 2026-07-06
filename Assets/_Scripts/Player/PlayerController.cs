@@ -96,9 +96,6 @@ public class PlayerController : MonoBehaviour
     //   2. closest-to-CURSOR within acquireRadius        -> SoD "attack move on cursor"
     //   3. kite fallback: closest-to-PLAYER within AttackRange
     //   4. nothing in range                              -> just move there (like RMB)
-    // Step 3 is what makes ranged kiting feel good: while retreating you LMB *behind* you,
-    // away from the pack, so the cursor scan finds nothing — but any enemy already within
-    // your attack range gets hit, so you keep DPSing as you back off instead of going silent.
     void OnLeftClick(bool held)
     {
         nextRepathTime = Time.time + holdRepathInterval;
@@ -169,13 +166,11 @@ public class PlayerController : MonoBehaviour
                 }
                 else
                 {
-                    playerMovement.Stop();   // in range: hold and let UpdateAutoAttack swing
+                    playerMovement.Stop();
                 }
                 break;
         }
     }
-
-    // --- auto attack (decoupled from movement: you can move while attacking) ---
 
     void UpdateAutoAttack()
     {
@@ -186,19 +181,19 @@ public class PlayerController : MonoBehaviour
         if (Vector3.Distance(currentTarget.transform.position, transform.position) > playerCombat.AttackRange) return;
         if (Time.time < nextAttackTime) return;
 
-        float interval = playerCombat.AttackSpeed;   // seconds per attack
+        float interval = playerCombat.AttackSpeed;
 
-        // Stretch the clip to fit the interval, but never play it slower than authored:
         // fast attacks speed the animation up; slow attacks play it once then idle until the next swing.
-        float speedMultiplier = Mathf.Max(1f, playerCombat.AttackAnimLength / interval);
+        float speedMultiplier = playerCombat.AttackAnimLength / interval;
         float clipDuration = playerCombat.AttackAnimLength / speedMultiplier;
 
         playerAnimator.PlayAttack(speedMultiplier);
         attackAnimUntil = Time.time + clipDuration;
         nextAttackTime = Time.time + interval;
 
-        // Land the hit on the clip's swing, but never after the next swing has begun.
-        Invoke(nameof(SendAttack), Mathf.Min(playerCombat.AttackDelay, interval * 0.9f));
+        // Fire the hit (damage + VFX) at the configured point along the swing:
+        // 1 = animation finished, 0.5 = halfway, 0 = start.
+        Invoke(nameof(SendAttack), clipDuration * playerCombat.AnimationFireDamage);
     }
 
     void SendAttack()
@@ -252,9 +247,8 @@ public class PlayerController : MonoBehaviour
 
     void SetAnimations()
     {
-        if (playerBusy) return;                  // ability owns the animator
-        if (Time.time < attackAnimUntil) return; // hold the attack/pickup pose
-
+        // Base layer always reflects locomotion (legs). The upper-body layer,
+        // driven by PlayAttack/PlayAbility, plays the swing over the top via mask.
         if (playerMovement.IsStopped) playerAnimator.PlayIdle();
         else playerAnimator.PlayWalk();
     }
