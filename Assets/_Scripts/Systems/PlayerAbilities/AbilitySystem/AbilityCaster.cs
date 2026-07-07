@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -88,10 +89,49 @@ public class AbilityCaster : MonoBehaviour
 
     // --- HUD hooks ---
     public AbilityData GetAbility(int slot) => hotbar[slot];
+    public event Action OnHotbarChanged;
+    public int SlotCount => hotbar.Length;
+
+    public Key GetKey(int slot) => slot >= 0 && slot < keys.Length ? keys[slot] : Key.None;
+
     public float GetCooldownNormalized(int slot)   // 1 = just used, 0 = ready
     {
         AbilityData a = hotbar[slot];
         if (a == null || a.cooldown <= 0f) return 0f;
         return Mathf.Clamp01((cooldownEnds[slot] - Time.time) / a.cooldown);
+    }
+
+    public void SetAbility(int slot, AbilityData ability)
+    {
+        if (slot < 0 || slot >= hotbar.Length) return;
+        hotbar[slot] = ability;
+        cooldownEnds[slot] = 0f;
+        OnHotbarChanged?.Invoke();
+    }
+
+    public bool AddAbility(AbilityData ability)
+    {
+        for (int i = 0; i < hotbar.Length; i++)
+        {
+            if (hotbar[i] == null)
+            {
+                hotbar[i] = ability;
+                cooldownEnds[i] = 0f;
+                OnHotbarChanged?.Invoke();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void SwapSlots(int a, int b)
+    {
+        if (a == b) return;
+        if (a < 0 || a >= hotbar.Length || b < 0 || b >= hotbar.Length) return;
+
+        (hotbar[a], hotbar[b]) = (hotbar[b], hotbar[a]);
+        (cooldownEnds[a], cooldownEnds[b]) = (cooldownEnds[b], cooldownEnds[a]);
+        // cooldown travels with the ability
+        OnHotbarChanged?.Invoke();
     }
 }
