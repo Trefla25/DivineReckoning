@@ -13,6 +13,8 @@ public class PlayerAnimatorUtils : MonoBehaviour
 
     Animator animator;
     int upperLayer;
+    int attackHash;
+    float attackClipLength;      // sampled the first time Attack actually plays
     string baseState;
     float upperTarget;
     int upperStateHash;
@@ -22,19 +24,29 @@ public class PlayerAnimatorUtils : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         upperLayer = animator.GetLayerIndex(UPPER_LAYER);
+        attackHash = Animator.StringToHash(ATTACK);
     }
 
     void Update()
     {
         float weight = animator.GetLayerWeight(upperLayer);
-        weight = Mathf.MoveTowards(weight, upperTarget, upperBlendSpeed * Time.deltaTime);
-        animator.SetLayerWeight(upperLayer, weight);
+        if (weight != upperTarget)
+        {
+            weight = Mathf.MoveTowards(weight, upperTarget, upperBlendSpeed * Time.deltaTime);
+            animator.SetLayerWeight(upperLayer, weight);
+        }
 
         if (upperStateHash != 0 && !animator.IsInTransition(upperLayer))
         {
             AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(upperLayer);
             if (info.shortNameHash == upperStateHash)
             {
+                if (attackClipLength <= 0f && upperStateHash == attackHash)
+                {
+                    AnimatorClipInfo[] clips = animator.GetCurrentAnimatorClipInfo(upperLayer);
+                    if (clips.Length > 0) attackClipLength = clips[0].clip.length;
+                }
+
                 if (info.normalizedTime < 1f) upperStarted = true;
                 else if (upperStarted) { upperTarget = 0f; upperStateHash = 0; }
             }
@@ -51,9 +63,10 @@ public class PlayerAnimatorUtils : MonoBehaviour
         animator.CrossFadeInFixedTime(state, fade, 0);
     }
 
-    public void PlayAttack(float speedMultiplier)
+    public void PlayAttack(float interval)
     {
-        animator.SetFloat(ATTACK_SPEED_PARAM, speedMultiplier);
+        float mult = attackClipLength > 0f ? attackClipLength / interval : 1f;
+        animator.SetFloat(ATTACK_SPEED_PARAM, mult);
         PlayUpper(ATTACK);
     }
 

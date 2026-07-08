@@ -7,7 +7,7 @@ public class ActionBar : MonoBehaviour
     [SerializeField] ActionBarSlot[] slots;    // Slot1..Slot4 in order
     [SerializeField] Image dragGhost;          // icon that follows the cursor(raycastTarget OFF, starts disabled)
 
-        ActionBarSlot draggingSlot;
+    ActionBarSlot draggingSlot;
 
     void Awake()
     {

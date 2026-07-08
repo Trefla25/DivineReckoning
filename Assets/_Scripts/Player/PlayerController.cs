@@ -183,17 +183,14 @@ public class PlayerController : MonoBehaviour
 
         float interval = playerCombat.AttackSpeed;
 
-        // fast attacks speed the animation up; slow attacks play it once then idle until the next swing.
-        float speedMultiplier = playerCombat.AttackAnimLength / interval;
-        float clipDuration = playerCombat.AttackAnimLength / speedMultiplier;
-
-        playerAnimator.PlayAttack(speedMultiplier);
-        attackAnimUntil = Time.time + clipDuration;
+        // Stretch the clip to fill the interval exactly, so the swing always
+        // spans the time between attacks (sped up or slowed down).
+        playerAnimator.PlayAttack(interval);
+        attackAnimUntil = Time.time + interval;
         nextAttackTime = Time.time + interval;
 
-        // Fire the hit (damage + VFX) at the configured point along the swing:
-        // 1 = animation finished, 0.5 = halfway, 0 = start.
-        Invoke(nameof(SendAttack), clipDuration * playerCombat.AnimationFireDamage);
+        // Hit lands at the configured point along the swing (0 = start, 1 = end).
+        Invoke(nameof(SendAttack), interval * playerCombat.AnimationFireDamage);
     }
 
     void SendAttack()
@@ -304,11 +301,7 @@ public class PlayerController : MonoBehaviour
 
     // --- ability hooks --------------------------------------------------------
 
-    public void SetBusy(bool value)
-    {
-        playerBusy = value;
-        if (!value) SetAnimations();
-    }
+    public void SetBusy(bool value) => playerBusy = value;
 
     // Abilities flagged "lock movement" call this for the duration of the cast.
     public void SetMovementLocked(bool value)
