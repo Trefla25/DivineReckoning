@@ -11,6 +11,8 @@ public class AbilityCaster : MonoBehaviour
 
     public StatController Stats { get; private set; }
     public PlayerTargetingUtils Targeting { get; private set; }
+    public Vector3 AimPoint { get; private set; }
+    public bool HasAimPoint { get; private set; }
     public StatController SelectedTarget => controller != null ? controller.SelectedTarget : null;
     public float AttackRange => Stats.GetValue(StatType.AttackRange);
 
@@ -55,6 +57,8 @@ public class AbilityCaster : MonoBehaviour
         if (ability.lockMovement) controller?.SetMovementLocked(true);
         cooldownEnds[slot] = Time.time + ability.cooldown;
 
+        CaptureAim();
+
         FaceCastDirection(ability);
         animator.PlayAbility(ability.animationState);
 
@@ -76,15 +80,15 @@ public class AbilityCaster : MonoBehaviour
         if (movement == null || ability.targeting is SelfTargeting) return;
 
         if (SelectedTarget != null)
-        {
-            // targeted (Strike) → face the enemy
             movement.FaceTowards(SelectedTarget.transform.position);
-        }
-        else if (Targeting.RaycastClick(out RaycastHit hit))
-        { 
-            // skillshot/ground → face the cursor
-            movement.FaceTowards(hit.point);
-        }
+        else if (HasAimPoint)
+            movement.FaceTowards(AimPoint);
+    }
+
+    void CaptureAim()
+    {
+        HasAimPoint = Targeting.RaycastClick(out RaycastHit hit);
+        if (HasAimPoint) AimPoint = hit.point;
     }
 
     // --- HUD hooks ---

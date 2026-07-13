@@ -18,14 +18,28 @@ public class ProjectileMove : MonoBehaviour
     [Tooltip("On impact, damage every enemy inside the projectile's box collider, not just the struck one.")]
     [SerializeField] bool hitAllInBox = false;
 
+    [Header("Grow")]
+    [Tooltip("Hitbox starts at this fraction of its authored size and grows to full over Grow Time. 1 = no growth.")]
+    [SerializeField, Range(0f, 1f)] float startSize = 1f;
+    [Tooltip("Seconds to reach full size. 0 = no growth.")]
+    [SerializeField] float growTime = 0f;
+    [Tooltip("Growth shape over normalized time (0->1). Ease it to match the VFX.")]
+    [SerializeField] AnimationCurve growCurve = AnimationCurve.Linear(0f, 0f, 1f, 1f);
+
     BoxCollider box;
     GameObject caster;
     AbilityData ability;
     readonly HashSet<GameObject> hitTargets = new();
     int pierced;
     bool finished;
+    Vector3 baseBoxSize;
+    float age;
 
-    void Awake() => box = GetComponent<BoxCollider>();
+    void Awake()
+    {
+        box = GetComponent<BoxCollider>();
+        if (box != null) baseBoxSize = box.size;
+    }
 
     public void Initialize(GameObject caster, AbilityData ability)
     {
@@ -34,7 +48,17 @@ public class ProjectileMove : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
-    void Update() => transform.position += transform.forward * (speed * Time.deltaTime);
+    void Update()
+    {
+        if (growTime > 0f && box != null)
+        {
+            age += Time.deltaTime;
+            float t = Mathf.Clamp01(age / growTime);
+            float k = Mathf.Lerp(startSize, 1f, growCurve.Evaluate(t));
+            box.size = baseBoxSize * k;
+        }
+        transform.position += transform.forward * (speed * Time.deltaTime);
+    }
 
     void OnTriggerEnter(Collider other)
     {
