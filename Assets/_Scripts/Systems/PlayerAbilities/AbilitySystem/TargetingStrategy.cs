@@ -66,8 +66,8 @@ public class GroundAOETargeting : TargetingStrategy
 
     public override void Execute(AbilityCaster caster, AbilityData ability)
     {
-        if (!caster.Targeting.RaycastClick(out RaycastHit hit)) return;
-        Vector3 point = hit.point;
+        if (!caster.HasAimPoint) return;
+        Vector3 point = caster.AimPoint;
 
         if (aoeVfx != null)
             UnityEngine.Object.Instantiate(aoeVfx, point, Quaternion.identity);
@@ -92,12 +92,12 @@ public class ProjectileTargeting : TargetingStrategy
     {
         if (projectilePrefab == null) return;
 
-        // Aim flat toward the cursor; fall back to facing direction.
+        // Aim flat toward the point captured at cast start; fall back to facing direction.
         Vector3 origin = caster.transform.position + Vector3.up;
         Vector3 dir = caster.transform.forward;
-        if (caster.Targeting.RaycastClick(out RaycastHit hit))
+        if (caster.HasAimPoint)
         {
-            Vector3 flat = hit.point - origin; flat.y = 0;
+            Vector3 flat = caster.AimPoint - origin; flat.y = 0;
             if (flat.sqrMagnitude > 0.01f) dir = flat.normalized;
         }
 
