@@ -14,5 +14,9 @@ public static class DamageCalculator
 
         target.TakeDamage(finalDamage);
         Debug.Log($"Applied damage: {finalDamage}");
+
+        // Combat state: dealing OR taking damage flags both parties.
+        info.Source?.GetComponent<ResourceRegen>()?.RegisterCombat();
+        target.GetComponent<ResourceRegen>()?.RegisterCombat();
     }
 }

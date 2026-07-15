@@ -1,7 +1,6 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEngine.ParticleSystem;
 
 [RequireComponent(typeof(Slider))]
 public class EnergyBar : MonoBehaviour
@@ -32,7 +31,7 @@ public class EnergyBar : MonoBehaviour
             label.text = $"{Mathf.CeilToInt(current)}/{Mathf.RoundToInt(max)}";
         }
 
-        if (lazySlider is null)
+        if (lazySlider == null)
         {
             slider.value = current;
             return;
@@ -52,10 +51,9 @@ public class EnergyBar : MonoBehaviour
         slider.value = current;
     }
 
-
     private void Update()
     {
-        if (lazySlider is null) return;
+        if (lazySlider == null) return;
 
         if (Time.time >= lazyCatchupTime)
         {

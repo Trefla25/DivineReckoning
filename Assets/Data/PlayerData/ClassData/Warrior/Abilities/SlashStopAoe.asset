@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99efb54437dbdc4499ce054c8ff910fa, type: 3}
+  m_Name: SlashStopAoe
+  m_EditorClassIdentifier: Assembly-CSharp::AbilityData
+  label: SlashSingle
+  icon: {fileID: 21300000, guid: 36e517a665a5e5c4096575adea8394f3, type: 3}
+  animationState: Attack
+  castTime: 0.5
+  lockMovement: 1
+  recoveryTime: 0.4
+  cooldown: 5
+  resourceCost: 0
+  abilityRange: 20
+  targeting:
+    rid: 6886347068625649732
+  effects:
+  - rid: 6886347068625649733
+  hitVfx: {fileID: 747497710485455894, guid: 39bb672923255934581cd86b04d3b85b, type: 3}
+  references:
+    version: 2
+    RefIds:
+    - rid: 6886347068625649732
+      type: {class: ProjectileTargeting, ns: , asm: Assembly-CSharp}
+      data:
+        projectilePrefab: {fileID: 8878905657140373089, guid: d8d027eff8144254ab8e96c038cee442, type: 3}
+    - rid: 6886347068625649733
+      type: {class: DamageEffect, ns: , asm: Assembly-CSharp}
+      data:
+        baseAmount: 200
+        powerScaling: 0
+        armorPen: 0

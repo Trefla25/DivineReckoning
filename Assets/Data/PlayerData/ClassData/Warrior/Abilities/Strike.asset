@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Strike
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
   label: Strike
-  icon: {fileID: 21300000, guid: 719c2201c2f5f6c4aafffaeb5abdf5f9, type: 3}
+  icon: {fileID: 21300000, guid: 7a2181c228f80644b8029357fb1209fe, type: 3}
   animationState: Attack
   castTime: 0
   lockMovement: 1
@@ -22,7 +22,7 @@ MonoBehaviour:
   resourceCost: 0
   abilityRange: 3
   targeting:
-    rid: 5935072922455507025
+    rid: 6886347057593843776
   effects:
   - rid: 5935072922455507010
   - rid: 5935072922455507011
@@ -40,6 +40,6 @@ MonoBehaviour:
       type: {class: ResourceGainEffect, ns: , asm: Assembly-CSharp}
       data:
         amount: 20
-    - rid: 5935072922455507025
-      type: {class: SelectedTargeting, ns: , asm: Assembly-CSharp}
+    - rid: 6886347057593843776
+      type: {class: MouseOverTargeting, ns: , asm: Assembly-CSharp}
       data: 

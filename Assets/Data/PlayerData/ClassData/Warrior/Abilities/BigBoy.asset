@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BigBoy
   m_EditorClassIdentifier: Assembly-CSharp::AbilityData
   label: BigBoy
-  icon: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  icon: {fileID: 21300000, guid: f4af24a6d8db4974da5beb43021bbb17, type: 3}
   animationState: Attack
   castTime: 0
   lockMovement: 1

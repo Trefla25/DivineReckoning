@@ -7,7 +7,7 @@ using TMPro;
 public class ActionBarSlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     [SerializeField] Image icon;
-    [SerializeField] GameObject emptyBackground;   // NEW: placeholder shown when slot has no ability
+    [SerializeField] GameObject emptyBackground;   // placeholder shown when slot has no ability
     [SerializeField] TMP_Text keyBindLabel;
 
     public int SlotIndex { get; private set; }
